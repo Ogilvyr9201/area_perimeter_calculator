@@ -275,7 +275,7 @@ def shape_dimensions(shape):
         area = area_calculator(shape, [sq_side])
         print("The perimeter is {:.2f}\n".format(perimeter))
         print("The area is {:.2f}\n".format(area))
-        return [sq_side, perimeter, area]
+        return [sq_side, "n.a", "n.a", perimeter, area]
     
     # get info for circle
     elif shape == "circle":
@@ -284,7 +284,7 @@ def shape_dimensions(shape):
         area = area_calculator(shape, [radius])
         print("The perimeter is {:.2f}\n".format(perimeter))
         print("The area is {:.2f}\n".format(area))
-        return [radius, perimeter, area]
+        return [radius, "n.a", "n.a", perimeter, area]
 
     # get info for recatngle
     elif shape == "rectangle":
@@ -294,7 +294,7 @@ def shape_dimensions(shape):
         area = area_calculator(shape, [rec_base, rec_height])
         print("The perimeter is {:.2f}\n".format(perimeter))
         print("The area is {:.2f}\n".format(area))
-        return [rec_base, rec_height,  perimeter, area]
+        return [rec_base, "n.a", rec_height,  perimeter, area]
 
     # get info for trinagle
     elif shape == "triangle":
@@ -311,7 +311,7 @@ def shape_dimensions(shape):
             area = area_calculator(shape, [tr_side1, tr_side2, tr_side3])
             print("The perimeter is {:.2f}\n".format(perimeter))
             print("The area is {:.2f}\n".format(area))
-            return ["3 sides", tr_side1, tr_side2, tr_side3, perimeter, area]
+            return [tr_side1, tr_side2, tr_side3, perimeter, area]
 
         # ask if they have the base and height
         want_area = string_checker("Do you have the values of the base and height? ", "<error> please enter yes or no.", yes_no_list)
@@ -321,9 +321,13 @@ def shape_dimensions(shape):
             tr_base = num_check("How long is the base? ", above_0_error, float, 0)
             tr_height = num_check("How long is the height? ", above_0_error, float, 0)
             area = area_calculator(shape, [tr_base, tr_height, ])
-            print("The perimeter is {:.2f}\n".format(perimeter))
             print("The area is {:.2f}\n".format(area))
-            return ["base and height", tr_base, tr_height, perimeter, area]
+            return [tr_base, tr_height, "n.a", "na", area]
+
+
+# currenecy formatting function
+def currencey(x):
+    return "${:.2f}".format(x)
 
 
 # **** Main Routine ****
@@ -331,73 +335,21 @@ def shape_dimensions(shape):
 pi = math.pi
 
 # summary lists
-shape_list = []
+chosen_shape_list = []
+side1_list = []
+side2_list = []
+side3_list = []
 perimeter_list = []
 area_list = []
 
-# square lists
-sq_sides = []
-sq_perimeters = []
-sq_areas = []
-
-# circle lists
-cr_radiae = []
-cr_perimeters = []
-cr_areas = []
-
-# rectangle lists
-rec_bases = []
-rec_heights = []
-rec_perimeters = []
-rec_areas = []
-
-# triangle lists
-tr_bases = []
-tr_heights = []
-tr_side1s = []
-tr_side2s = []
-tr_side3s = []
-tr_perimeters = []
-tr_areas = []
-
 # summary dictionary
 summary_dictionary = {
-    "Shape": shape_list,
+    "Shape": chosen_shape_list,
+    "Side 1/Base/Radius": side1_list,
+    "Side 2/Height:": side2_list,
+    "Side 3": side3_list,
     "Perimeter": perimeter_list,
     "Area": area_list
-}
-
-# square dictionarys
-square_dictionary = {
-    "Side": sq_sides,
-    "Perimeter": sq_perimeters,
-    "Area": sq_areas
-}
-
-# cricle dictionary 
-circle_dictionary = {
-    "Radius": cr_radiae,
-    "Perimeter": cr_perimeters,
-    "Area": cr_areas
-}
-
-# rectangle dictionary
-rectangle_dictionary = {
-    "Base": rec_bases,
-    "Height": rec_heights,
-    "Perimeter": rec_perimeters,
-    "Area": rec_areas
-}
-
-# triangle dictionary
-triangle_dictionary = {
-    "Base": tr_bases,
-    "Height": tr_heights,
-    "Side 1": tr_side1s,
-    "Side 2": tr_side2s,
-    "Side 3": tr_side3s,
-    "Perimeter": tr_perimeters,
-    "Areas": tr_areas
 }
 
 # define shape list
@@ -421,40 +373,24 @@ while shape != "xxx":
 
     dimensions = shape_dimensions(shape)
 
-    if shape == "square":
-        sq_sides.append(dimensions[0])
-        sq_perimeters.append(dimensions[1])
-        sq_areas.append(dimensions[2])
-        perimeter_list.append(dimensions[1])
-        area_list.append(dimensions[2])
+    chosen_shape_list.append(shape.capitalize())
+    side1_list.append(dimensions[0])
+    side2_list.append(dimensions[1])
+    side3_list.append(dimensions[2])
+    perimeter_list.append(dimensions[3])
+    area_list.append(dimensions[4])
 
-
-    elif shape == "circle":
-        cr_radiae.append(dimensions[0])
-        cr_perimeters.append(dimensions[1])
-        cr_areas.append(dimensions[2])
-
-    elif shape == "rectangle":
-        rec_bases.append(dimensions[0])
-        rec_heights.append(dimensions[1])
-        rec_perimeters.append(dimensions[2])
-        rec_areas.append(dimensions[3])
-
-    else:
-        if dimensions[0] == "3 sides":
-            tr_side1s.append(dimensions[1])
-            tr_side2s.append(dimensions[2])
-            tr_side3s.append(dimensions[3])
-        
-        elif dimensions[0] == "base and height":
-            tr_bases.append(dimensions[1])
-            tr_heights.append(dimensions[2])
-
-    shape_list.append(shape)
-
+print()
+# print("*** Stuff in dictionary ***")
+# summary_items = summary_dictionary.items()
+# print(summary_items)
 
 # generates variable frames
 summary_frame = pandas.DataFrame(summary_dictionary)
+
+# set index to shape 
+summary_frame = summary_frame.set_index("Shape:")
+summary_frame = summary_frame.round(2)
 
 # frames to text
 summary_txt = pandas.DataFrame.to_string(summary_frame)

@@ -1,0 +1,22 @@
+***** Area Perimeter Calculator *****
+
+---- Square ----
+
+Side	 Perimeter	Area
+   5	        20	  25
+   4	        16	  16
+   6	        24        36
+
+---- Rectangle ----
+
+Side 1 	   Side 2	Perimeter	Area
+     4		6	       20	  24
+     5	 	7	       24	  35
+     6		8	       28	  48
+
+---- Triangle ----
+
+Side 1	   Side 2	Side 3  	Perimeter	Area
+     3		4	     5		       12	   6	
+     4		5	     6		       15	9.92
+     5		6	     7		       18	14.7  	    		
