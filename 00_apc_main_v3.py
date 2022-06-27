@@ -1,5 +1,4 @@
 import math
-import pandas
 
 
 # Functions go here
@@ -47,6 +46,29 @@ def string_checker(question, error, valid_list, exit_code = None):
         # output error message
         print(error)
         print()
+
+
+
+# Number checker to make sure user inputs correctly
+def num_check(question, error, num_type, low):
+
+    valid = False
+    while not valid:
+        try:
+            response = num_type(input(question))
+            if response > low:
+                return response
+            elif response == low:
+                return ""
+            else:
+                print(error)
+                print()
+                continue
+
+        except ValueError:
+            print(error)
+            print()
+
 
 
 # calculates the perimeter
@@ -250,18 +272,18 @@ def shape_dimensions(shape):
         sq_side = num_check("How long is one side of the square? ", above_0_error, float, 0)
         perimeter = perimeter_calculator(shape, [sq_side])
         area = area_calculator(shape, [sq_side])
-        print("\nThe perimeter is {:.2f}".format(perimeter))
+        print("The perimeter is {:.2f}\n".format(perimeter))
         print("The area is {:.2f}\n".format(area))
-        return [sq_side, "n.a", "n.a", perimeter, area]
+        return [sq_side, perimeter, area]
     
     # get info for circle
     elif shape == "circle":
         radius = num_check("What is the radius? ", above_0_error, float, 0)
         perimeter = perimeter_calculator(shape, [radius])
         area = area_calculator(shape, [radius])
-        print("\nThe perimeter is {:.2f}".format(perimeter))
+        print("The perimeter is {:.2f}\n".format(perimeter))
         print("The area is {:.2f}\n".format(area))
-        return [radius, "n.a", "n.a", perimeter, area]
+        return [radius, perimeter, area]
 
     # get info for recatngle
     elif shape == "rectangle":
@@ -269,24 +291,24 @@ def shape_dimensions(shape):
         rec_height = num_check("How long is the height? ", above_0_error, float, 0)
         perimeter = perimeter_calculator(shape, [rec_base, rec_height])
         area = area_calculator(shape, [rec_base, rec_height])
-        print("\nThe perimeter is {:.2f}".format(perimeter))
+        print("The perimeter is {:.2f}\n".format(perimeter))
         print("The area is {:.2f}\n".format(area))
-        return [rec_base, "n.a", rec_height,  perimeter, area]
+        return [rec_base, rec_height,  perimeter, area]
 
     # get info for trinagle
     elif shape == "triangle":
 
         # ask if they have 3 sides
-        want_perimeter = string_checker("Do you have the values of all 3 sides? ", "<error> please enter yes or no.", yes_no_list)
+        want_pereimeter = string_checker("Do you have the values of all 3 sides? ", "<error> please enter yes or no.", yes_no_list)
 
         # if they do ask for them
-        if want_perimeter == "yes":
+        if want_pereimeter == "yes":
             tr_side1 = num_check("How long is the first side? ", above_0_error, float, 0)
             tr_side2 = num_check("How long is the second side? ", above_0_error, float, 0)
             tr_side3 = num_check("How long is the third side? ", above_0_error, float, 0)
             perimeter = perimeter_calculator(shape, [tr_side1, tr_side2, tr_side3])
             area = area_calculator(shape, [tr_side1, tr_side2, tr_side3])
-            print("\nThe perimeter is {:.2f}".format(perimeter))
+            print("The perimeter is {:.2f}\n".format(perimeter))
             print("The area is {:.2f}\n".format(area))
             return [tr_side1, tr_side2, tr_side3, perimeter, area]
 
@@ -298,117 +320,65 @@ def shape_dimensions(shape):
             tr_base = num_check("How long is the base? ", above_0_error, float, 0)
             tr_height = num_check("How long is the height? ", above_0_error, float, 0)
             area = area_calculator(shape, [tr_base, tr_height, ])
-            print("\nThe area is {:.2f}\n".format(area))
-            return [tr_base, tr_height, "n.a", "n.a", area]
-        
-        if want_area and want_perimeter == "no":
-            print("cannot calculate area or perimeter with no information\n")
-            return ["n.a", "n.a", "n.a", "dummy", "n.a"]
-
-
-# makes sure name is not blank
-def not_blank(question, error):
-    valid = False
-    while not valid:
-        response = input(question)
-
-        if not response:
-            print(error)
-        else:
-            return response
+            print("The perimeter is {:.2f}\n".format(perimeter))
+            print("The area is {:.2f}\n".format(area))
+            return [tr_base, tr_height, perimeter, area]
 
 
 # **** Main Routine ****
-
 # define pi
 pi = math.pi
 
+
+# set up dictionarys and lists
 # summary lists
-chosen_shape_list = []
-side1_list = []
-side2_list = []
-side3_list = []
+shape_list = []
 perimeter_list = []
 area_list = []
 
 # summary dictionary
 summary_dictionary = {
-    "Shape": chosen_shape_list,
-    "  Side 1": side1_list,
-    "  Side 2": side2_list,
-    "  Side 3": side3_list,
+    "Shape": shape_list,
     "Perimeter": perimeter_list,
     "Area": area_list
 }
 
+# square lists
+sq_sides = []
+sq_perimeters = []
+sq_areas = []
+
+# square dictionary
+square_dictionary = {
+    "Side": sq_sides,
+    "Perimeter": sq_perimeters,
+    "Area": sq_areas
+}
+
+# rectangle lists
+
+
 # define shape list
-shape_list = ["square", "triangle", "circle", "rectangle", "xxx"]
+shape_list = ["square", "triangle", "circle", "rectangle"]
 yes_no_list = ["yes", "no"]
 
 
 # defines more then 0 error as i use this a lot
 above_0_error = "<error> please enter an integer above 0" # add gold slide
 
-# Title
-print("*** Area / Perimeter Caclulator ***\n")
-
-# ask user for there name to make file name later
-name = not_blank("What is your name? ", "<error> name cannot be blank.")
-
 # ask user for shape
 shape = ""
 while shape != "xxx":
     
     # ask user for shape
-    shape = string_checker("Which shape do you want to calculate? ", "<error> please enter a valid 2D shape. (square, rectangle, triangle, circle)", shape_list)
+    shape = string_checker("Which shape do you want to calculate? ", "<error> please enter a valid shape.", shape_list)
 
     # break loop if exit code entered 
     if shape == "xxx":
         break
 
-    # ask user for the dimensions of the shape
     dimensions = shape_dimensions(shape)
 
-    # add the dimensions to a list
-    chosen_shape_list.append(shape.capitalize())
-    side1_list.append(dimensions[0])
-    side2_list.append(dimensions[1])
-    side3_list.append(dimensions[2])
-    perimeter_list.append(dimensions[3])
-    area_list.append(dimensions[4])
-
-print()
-# print("*** Stuff in dictionary ***")
-# summary_items = summary_dictionary.items()
-# print(summary_items)
-
-# generates variable frames
-summary_frame = pandas.DataFrame(summary_dictionary)
-
-# set index to shape 
-summary_frame = summary_frame.set_index("Shape")
-summary_frame = summary_frame.round(2)
-
-# frames to text
-file_title = "{} - Area / Perimeter Calculator".format(name.capitalize())
-summary_title = "*** Summary Frame ***"
-summary_txt = pandas.DataFrame.to_string(summary_frame)
-
-# open text file
-file_name = "{}_apc.txt".format(name)
-text_file = open(file_name, "w+")
-
-# to write list
-to_write = [file_title, summary_title, summary_txt]
-
-# heading
-for item in to_write:
-    text_file.write(item)
-    text_file.write("\n\n")
-
-# close file
-text_file.close()
-
-# print summarys
-print(summary_frame)
+    if shape == "square":
+        pass
 
