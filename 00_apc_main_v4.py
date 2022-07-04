@@ -12,8 +12,7 @@ def num_check(question, error, num_type, low):
             response = num_type(input(question))
             if response > low:
                 return response
-            elif response == low:
-                return ""
+            
             else:
                 print(error)
                 print()
@@ -95,33 +94,35 @@ def area_calculator(shape, lengths):
 # get shape dimensions
 def shape_dimensions(shape):
 
-    # get info for square
-    if shape == "square":
-        sq_side = num_check("How long is one side of the square? ", above_0_error, float, 0)
-        perimeter = perimeter_calculator(shape, [sq_side])
-        area = area_calculator(shape, [sq_side])
-        print("\nThe perimeter is {:.2f}".format(perimeter))
-        print("The area is {:.2f}\n".format(area))
-        return [sq_side, "n.a", "n.a", perimeter, area]
-    
-    # get info for circle
-    elif shape == "circle":
-        radius = num_check("What is the radius? ", above_0_error, float, 0)
-        perimeter = perimeter_calculator(shape, [radius])
-        area = area_calculator(shape, [radius])
-        print("\nThe perimeter is {:.2f}".format(perimeter))
-        print("The area is {:.2f}\n".format(area))
-        return [radius, "n.a", "n.a", perimeter, area]
+    # get info for square or circle or rectrangle
+    if shape in ("square", "circle"):
+        # Ask a certain question if shape is square
+        if shape == "square":
+            side1 = num_check("How long is one side of the square? ", above_0_error, float, 0)
+            side2 = side1
+
+        # ask a certain question if the shape is circle
+        else:
+            side1 = num_check("what is the radius of the circle", above_0_error, float, 0)
+            side2 = "n.a"
+
+        # define side3 as nothing
+        side3 = "n.a"
+
+        # calculate perimeter and area
+        perimeter = perimeter_calculator(shape, [side1])
+        area = area_calculator(shape, [side1])
 
     # get info for recatngle
     elif shape == "rectangle":
-        rec_base = num_check("How long is the base? ", above_0_error, float, 0)
-        rec_height = num_check("How long is the height? ", above_0_error, float, 0)
-        perimeter = perimeter_calculator(shape, [rec_base, rec_height])
-        area = area_calculator(shape, [rec_base, rec_height])
-        print("\nThe perimeter is {:.2f}".format(perimeter))
-        print("The area is {:.2f}\n".format(area))
-        return [rec_base, "n.a", rec_height,  perimeter, area]
+        side1 = num_check("How long is the base? ", above_0_error, float, 0)
+        side2 = num_check("How long is the height? ", above_0_error, float, 0)
+        side3 = "n.a"
+
+        # calculate area and perimeter
+        perimeter = perimeter_calculator(shape, [side1, side2])
+        area = area_calculator(shape, [side1, side2])
+    
 
     # get info for trinagle
     elif shape == "triangle":
@@ -129,31 +130,35 @@ def shape_dimensions(shape):
         # ask if they have 3 sides
         want_perimeter = string_checker("Do you have the values of all 3 sides? ", "<error> please enter yes or no.", yes_no_list)
 
-        # if they do ask for them
+        # if they do have three sides, ask for them
         if want_perimeter == "yes":
-            tr_side1 = num_check("How long is the first side? ", above_0_error, float, 0)
-            tr_side2 = num_check("How long is the second side? ", above_0_error, float, 0)
-            tr_side3 = num_check("How long is the third side? ", above_0_error, float, 0)
-            perimeter = perimeter_calculator(shape, [tr_side1, tr_side2, tr_side3])
-            area = area_calculator(shape, [tr_side1, tr_side2, tr_side3])
-            print("\nThe perimeter is {:.2f}".format(perimeter))
-            print("The area is {:.2f}\n".format(area))
-            return [tr_side1, tr_side2, tr_side3, perimeter, area]
+            side1 = num_check("How long is the first side? ", above_0_error, float, 0)
+            side2 = num_check("How long is the second side? ", above_0_error, float, 0)
+            side3 = num_check("How long is the third side? ", above_0_error, float, 0)
+
+            # calculate perimeter and area
+            perimeter = perimeter_calculator(shape, [side1, side2, side3])
+            area = area_calculator(shape, [side1, side2, side3])
 
         # ask if they have the base and height
         want_area = string_checker("Do you have the values of the base and height? ", "<error> please enter yes or no.", yes_no_list)
 
-        # if they do ask for it
+        # if they do have the base and height, ask for it
         if want_area == "yes":
-            tr_base = num_check("How long is the base? ", above_0_error, float, 0)
-            tr_height = num_check("How long is the height? ", above_0_error, float, 0)
-            area = area_calculator(shape, [tr_base, tr_height, ])
-            print("\nThe area is {:.2f}\n".format(area))
-            return [tr_base, tr_height, "n.a", "n.a", area]
+            side1 = num_check("How long is the base? ", above_0_error, float, 0)
+            side2 = num_check("How long is the height? ", above_0_error, float, 0)
+
+            # define perimeter as nothing
+            perimeter == "n.a"
+
+            # calculate area
+            area = area_calculator(shape, [side1, side2])
         
         if want_area and want_perimeter == "no":
             print("cannot calculate area or perimeter with no information\n")
-            return ["n.a", "n.a", "n.a", "dummy", "n.a"]
+
+    # return information
+    return [side1, side2, side3, perimeter, area]
 
 
 # makes sure name is not blank
@@ -219,6 +224,10 @@ while shape != "xxx":
     # ask user for the dimensions of the shape
     dimensions = shape_dimensions(shape)
 
+    # tell user perimeter and area
+    print("\nThe perimeter is {:.2f}".format(dimensions[3]))
+    print("The area is {:.2f}\n".format(dimensions[4]))
+
     # add the dimensions to a list
     chosen_shape_list.append(shape.capitalize())
     side1_list.append(dimensions[0])
@@ -228,9 +237,6 @@ while shape != "xxx":
     area_list.append(dimensions[4])
 
 print()
-# print("*** Stuff in dictionary ***")
-# summary_items = summary_dictionary.items()
-# print(summary_items)
 
 # generates variable frames
 summary_frame = pandas.DataFrame(summary_dictionary)
