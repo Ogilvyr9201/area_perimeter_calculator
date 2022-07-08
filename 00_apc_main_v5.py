@@ -1,25 +1,26 @@
 import math
+from traceback import print_tb
 import pandas
 
 
 # Functions go here
 # Number checker to make sure user inputs correctly
-def num_check(question, error, num_type, low):
+def num_check(question):
 
     valid = False
     while not valid:
         try:
-            response = num_type(input(question))
-            if response > low:
+            response = float(input(question))
+            if response > 0:
                 return response
             
             else:
-                print(error)
+                print("<error> please enter a number above 0")
                 print()
                 continue
 
         except ValueError:
-            print(error)
+            print("<error> please enter a number above 0")
             print()
 
 
@@ -48,47 +49,50 @@ def string_checker(question, error, valid_list, exit_code = None):
         print()
 
 
-# calculates the perimeter
-def perimeter_calculator(shape, lengths):
-    
-    if shape == "square":
-        perimeter = lengths[0] * 4
-
-    elif shape == "circle":
-        perimeter = 2 * pi * lengths[0]
-
-    elif shape == "rectangle":
-        perimeter = 2 * (lengths[0] + lengths[1])
-
-    elif shape == "triangle":
-        perimeter = lengths[0] + lengths[1] + lengths[2]
-    
-    return perimeter
-    
-
-# calculates the area
-def area_calculator(shape, lengths):
+# calculates the area and perimeter
+def a_p_calculator(shape, lengths):
      
+    # work put the area of a square
     if shape == "square":
         area = lengths[0] ** 2
+        perimeter = lengths[0] * 4
 
+    # work out area and perimeter of a circle
     elif shape == "circle":
         area = pi * (lengths[0] ** 2)
+        perimeter = 2 * pi * lengths[0]
 
+    # work out area of a rectangle
     elif shape == "rectangle":
         area = lengths[0] * lengths[1]
+        perimeter = 2 * (lengths[0] + lengths[1])
 
+    # work out area of a triangle
     elif shape == "triangle":
+
+        # if they have base and height
         if len(lengths) == 2:
             area = (lengths[0] * lengths[1]) / 2
+            perimeter = "n.a"
 
+        # if the have three sides
         else:
             # halfs perimeter for herons formula
             p = (lengths[0] + lengths[1] + lengths[2]) / 2
-            # using herons formula
-            area = math.sqrt(p * (p - lengths[0]) * (p - lengths[1]) * (p - lengths[2]))
 
-    return area
+            # using herons formula
+            # try to figure out area
+            try:
+                area = math.sqrt(p * (p - lengths[0]) * (p - lengths[1]) * (p - lengths[2]))
+
+            # if there is a math error because the triangle is impossible return nothing
+            except ValueError:
+                print("A triangle with these sides does not exist. ")
+                return ""
+            perimeter = lengths[0] + lengths[1] + lengths[2]
+
+    # returns area and perimeter
+    return [perimeter, area]
     
 
 # get shape dimensions
@@ -98,30 +102,28 @@ def shape_dimensions(shape):
     if shape in ("square", "circle"):
         # Ask a certain question if shape is square
         if shape == "square":
-            side1 = num_check("How long is one side of the square? ", above_0_error, float, 0)
+            side1 = num_check("How long is one side of the square? ")
             side2 = side1
 
         # ask a certain question if the shape is circle
         else:
-            side1 = num_check("what is the radius of the circle", above_0_error, float, 0)
+            side1 = num_check("What is the radius of the circle? ")
             side2 = "n.a"
 
         # define side3 as nothing
         side3 = "n.a"
 
         # calculate perimeter and area
-        perimeter = perimeter_calculator(shape, [side1])
-        area = area_calculator(shape, [side1])
+        dimensions = a_p_calculator(shape, [side1])
 
     # get info for recatngle
     elif shape == "rectangle":
-        side1 = num_check("How long is the base? ", above_0_error, float, 0)
-        side2 = num_check("How long is the height? ", above_0_error, float, 0)
+        side1 = num_check("How long is the base? ")
+        side2 = num_check("How long is the height? ")
         side3 = "n.a"
 
         # calculate area and perimeter
-        perimeter = perimeter_calculator(shape, [side1, side2])
-        area = area_calculator(shape, [side1, side2])
+        dimensions = a_p_calculator(shape, [side1, side2])
     
 
     # get info for trinagle
@@ -132,30 +134,47 @@ def shape_dimensions(shape):
 
         # if they do have three sides, ask for them
         if want_perimeter == "yes":
-            side1 = num_check("How long is the first side? ", above_0_error, float, 0)
-            side2 = num_check("How long is the second side? ", above_0_error, float, 0)
-            side3 = num_check("How long is the third side? ", above_0_error, float, 0)
+            side1 = num_check("How long is the first side? ")
+            side2 = num_check("How long is the second side? ")
+            side3 = num_check("How long is the third side? ")
 
             # calculate perimeter and area
-            perimeter = perimeter_calculator(shape, [side1, side2, side3])
-            area = area_calculator(shape, [side1, side2, side3])
+            dimensions = a_p_calculator(shape, [side1, side2, side3])
+
+            # if the triangle is impossible
+            if dimensions == "":
+                perimeter = "triangle"
+                area = "impossible"
+
+            else:
+                perimeter = dimensions[0]
+                area = dimensions[1]
+
+            # return information so that it breaks out of the function
+            return [side1, side2, side3, perimeter, area]
 
         # ask if they have the base and height
         want_area = string_checker("Do you have the values of the base and height? ", "<error> please enter yes or no.", yes_no_list)
 
         # if they do have the base and height, ask for it
         if want_area == "yes":
-            side1 = num_check("How long is the base? ", above_0_error, float, 0)
-            side2 = num_check("How long is the height? ", above_0_error, float, 0)
-
-            # define perimeter as nothing
-            perimeter == "n.a"
+            side1 = num_check("How long is the base? ")
+            side2 = num_check("How long is the height? ")
+            side3 = "n.a"
 
             # calculate area
-            area = area_calculator(shape, [side1, side2])
+            dimensions = a_p_calculator(shape, [side1, side2])
         
-        if want_area and want_perimeter == "no":
+        if want_area == "no" and want_perimeter == "no":
             print("cannot calculate area or perimeter with no information\n")
+            side1 = "n.a"
+            side2 = "n.a"
+            side3 = "n.a"
+            dimensions = ["n.a", "n.a"]
+
+    # define the area nd perimeter seperatly
+    perimeter = dimensions[0]
+    area = dimensions[1]
 
     # return information
     return [side1, side2, side3, perimeter, area]
@@ -189,8 +208,9 @@ def instructions():
     For tirangle it will ask you if you have all three sides, and 
     if you dont it will ask you if you have the base and height.
     
-    Once you are finished you use the exit code 'xxx' and a text 
-    file with a table of information called 'yourname'_apc.txt""")
+    Once you are finished you use the exit code 'xxx' and you
+    choose to make a text file with a table of information 
+    called 'what you choose'_apc.txt\n\n""")
 
 
 # **** Main Routine ****
@@ -227,10 +247,13 @@ above_0_error = "<error> please enter an integer above 0" # add gold slide
 # Title
 print("*** Area / Perimeter Caclulator ***\n")
 
-# ask user for there name to make file name later
-name = not_blank("What is your name? ", "<error> name cannot be blank.")
-
+# ask user if they want the instructions
 see_instructions = string_checker("Would you like to see instructions? " ,"PLease put in yes or no (y / n)", yes_no_list)
+print()
+
+# print instructions
+if see_instructions == "yes":
+    instructions()
 
 # ask user for shape
 shape = ""
@@ -247,8 +270,15 @@ while shape != "xxx":
     dimensions = shape_dimensions(shape)
 
     # tell user perimeter and area
-    print("\nThe perimeter is {:.2f}".format(dimensions[3]))
-    print("The area is {:.2f}\n".format(dimensions[4]))
+    if isinstance(dimensions[3], str) == True and isinstance(dimensions[4], str) == True:
+        print("\nThe perimeter is not calculated")
+        print("The area is not calculated\n")
+    elif isinstance(dimensions[3], str) == True:
+        print("\nThe perimeter is not calculated")
+        print("The area is {:.2f} Units squared\n".format(dimensions[4]))
+    else:
+        print("\nThe perimeter is {:.2f} Units".format(dimensions[3]))
+        print("The area is {:.2f}\n Units squared".format(dimensions[4]))
 
     # add the dimensions to a list
     chosen_shape_list.append(shape.capitalize())
@@ -267,25 +297,34 @@ summary_frame = pandas.DataFrame(summary_dictionary)
 summary_frame = summary_frame.set_index("Shape")
 summary_frame = summary_frame.round(2)
 
-# frames to text
-file_title = "{} - Area / Perimeter Calculator".format(name.capitalize())
-summary_title = "*** Summary Frame ***"
-summary_txt = pandas.DataFrame.to_string(summary_frame)
+# ask if user wants to write to file
+want_file = string_checker("Would you like a text file of your results? ", "Pease eneter yes or no (y / n)", yes_no_list)
+print()
+if want_file == "yes":
+    
+    # ask user for file  name to make file
+    name = not_blank("What would you like to call the file? ", "<error> name cannot be blank.")
+    print()
 
-# open text file
-file_name = "{}_apc.txt".format(name)
-text_file = open(file_name, "w+")
+    # frames to text
+    file_title = "{} - Area / Perimeter Calculator".format(name.capitalize())
+    summary_title = "*** Data Table ***"
+    summary_txt = pandas.DataFrame.to_string(summary_frame)
 
-# to write list
-to_write = [file_title, summary_title, summary_txt]
+    # open text file
+    file_name = "{}_apc.txt".format(name)
+    text_file = open(file_name, "w+")
 
-# heading
-for item in to_write:
-    text_file.write(item)
-    text_file.write("\n\n")
+    # to write list
+    to_write = [file_title, summary_title, summary_txt]
 
-# close file
-text_file.close()
+    # heading
+    for item in to_write:
+        text_file.write(item)
+        text_file.write("\n\n")
+
+    # close file
+    text_file.close()
 
 # print summarys
 print(summary_frame)
